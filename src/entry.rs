@@ -1,4 +1,4 @@
-use std::fmt::Display;
+use std::fmt;
 
 const ARROW: &str = "\u{25BA}";
 const HIDDEN_ARROW: &str = "\u{25BB}";
@@ -13,7 +13,7 @@ pub struct Entry {
     pub hidden: bool,
 }
 
-impl Display for Entry {
+impl fmt::Display for Entry {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let arrow = if !self.hidden { ARROW } else { HIDDEN_ARROW };
         let icon = match self.file_type {

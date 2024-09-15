@@ -1,13 +1,15 @@
 pub mod cli;
 pub mod entry;
 
-use crate::entry::Entry;
-use entry::FileType;
-use std::{env, fs};
+use crate::entry::{Entry, FileType};
+use std::{env, fs, path::PathBuf};
 
-pub fn get_entries(all: bool) -> (Vec<Entry>, Vec<Entry>) {
-    let cwd = env::current_dir().unwrap();
-    let entries = fs::read_dir(cwd).unwrap();
+pub fn get_entries(path: Option<String>, all: bool) -> (Vec<Entry>, Vec<Entry>) {
+    let path = match path {
+        Some(path) => PathBuf::from(path),
+        None => env::current_dir().unwrap(),
+    };
+    let entries = fs::read_dir(path).unwrap();
 
     let mut file_list: Vec<Entry> = Vec::new();
     let mut folder_list: Vec<Entry> = Vec::new();
@@ -32,9 +34,10 @@ pub fn get_entries(all: bool) -> (Vec<Entry>, Vec<Entry>) {
             },
         };
 
-        match entry.file_type {
-            FileType::File => file_list.push(entry),
-            FileType::Folder => folder_list.push(entry),
+        if let FileType::File = entry.file_type {
+            file_list.push(entry);
+        } else {
+            folder_list.push(entry);
         }
     }
 
