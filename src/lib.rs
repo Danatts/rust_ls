@@ -1,5 +1,6 @@
 pub mod cli;
 pub mod entry;
+pub mod icons;
 
 use crate::entry::Entry;
 use std::{env, fs, path::PathBuf};
@@ -40,6 +41,5 @@ pub fn get_entries(path: Option<String>, all: bool) -> (Vec<Entry>, Vec<Entry>) 
 }
 
 fn is_hidden(entry: &str) -> bool {
-    let first_char = entry.chars().next().unwrap();
-    first_char == '.'
+    entry.starts_with('.')
 }

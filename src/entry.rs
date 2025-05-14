@@ -1,11 +1,5 @@
+use crate::icons::ICONS;
 use std::{fmt, fs::Metadata};
-
-const ARROW: &str = "\u{25BA}";
-const HIDDEN_ARROW: &str = "\u{25BB}";
-const FILE: &str = "\u{f15b}";
-const HIDDEN_FILE: &str = "\u{ea7b}";
-const FOLDER: &str = "\u{e5ff}";
-const HIDDEN_FOLDER: &str = "\u{ea83}";
 
 pub struct Entry {
     pub name: String,
@@ -15,22 +9,14 @@ pub struct Entry {
 
 impl fmt::Display for Entry {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let arrow = if !self.hidden { ARROW } else { HIDDEN_ARROW };
+        let arrow = if !self.hidden {
+            ICONS.get("bullet").unwrap()
+        } else {
+            ICONS.get("hide_bullet").unwrap()
+        };
         let icon = match self.metadata.is_dir() {
-            false => {
-                if self.hidden {
-                    HIDDEN_FILE
-                } else {
-                    FILE
-                }
-            }
-            true => {
-                if self.hidden {
-                    HIDDEN_FOLDER
-                } else {
-                    FOLDER
-                }
-            }
+            false => ICONS.get("file").unwrap(),
+            true => ICONS.get("folder").unwrap(),
         };
         write!(f, "{arrow} {icon} {}", self.name)
     }
