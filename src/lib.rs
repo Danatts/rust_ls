@@ -1,7 +1,7 @@
 pub mod cli;
 pub mod entry;
 
-use crate::entry::{Entry, FileType};
+use crate::entry::Entry;
 use std::{env, fs, path::PathBuf};
 
 pub fn get_entries(path: Option<String>, all: bool) -> (Vec<Entry>, Vec<Entry>) {
@@ -16,28 +16,20 @@ pub fn get_entries(path: Option<String>, all: bool) -> (Vec<Entry>, Vec<Entry>) 
 
     for entry in entries {
         let entry = entry.unwrap();
-        let entry_name = entry.file_name().into_string().unwrap();
-        let entry_meta = entry.metadata().unwrap();
-        let hidden = is_hidden(&entry_name);
 
-        if !all && hidden {
-            continue;
-        }
-
-        let entry = Entry {
+        let mut entry = Entry {
             name: entry.file_name().into_string().unwrap(),
-            hidden,
-            file_type: if entry_meta.is_dir() {
-                FileType::Folder
-            } else {
-                FileType::File
-            },
+            hidden: false,
+            metadata: entry.metadata().unwrap(),
         };
 
-        if let FileType::File = entry.file_type {
-            file_list.push(entry);
-        } else {
-            folder_list.push(entry);
+        entry.hidden = is_hidden(&entry.name);
+        if (all & entry.hidden) | !entry.hidden {
+            if entry.metadata.is_file() {
+                file_list.push(entry);
+            } else {
+                folder_list.push(entry);
+            }
         }
     }
 

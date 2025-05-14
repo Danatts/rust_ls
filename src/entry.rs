@@ -1,4 +1,4 @@
-use std::fmt;
+use std::{fmt, fs::Metadata};
 
 const ARROW: &str = "\u{25BA}";
 const HIDDEN_ARROW: &str = "\u{25BB}";
@@ -9,22 +9,22 @@ const HIDDEN_FOLDER: &str = "\u{ea83}";
 
 pub struct Entry {
     pub name: String,
-    pub file_type: FileType,
+    pub metadata: Metadata,
     pub hidden: bool,
 }
 
 impl fmt::Display for Entry {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let arrow = if !self.hidden { ARROW } else { HIDDEN_ARROW };
-        let icon = match self.file_type {
-            FileType::File => {
+        let icon = match self.metadata.is_dir() {
+            false => {
                 if self.hidden {
                     HIDDEN_FILE
                 } else {
                     FILE
                 }
             }
-            FileType::Folder => {
+            true => {
                 if self.hidden {
                     HIDDEN_FOLDER
                 } else {
@@ -55,8 +55,3 @@ impl PartialEq for Entry {
 }
 
 impl Eq for Entry {}
-
-pub enum FileType {
-    File,
-    Folder,
-}
